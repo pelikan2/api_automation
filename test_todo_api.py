@@ -3,9 +3,9 @@ import uuid # unigue identifier
 
 
 
-ENDPOINT = "https://todo.pixegami.io"
+ENDPOINT = "https://petstore.swagger.io/v2/user"
 
-response = requests.get(ENDPOINT)
+response = requests.get(ENDPOINT + "/user1")
 print(response)
 
 data = response.json()
@@ -16,29 +16,29 @@ print(status_code)
 
 
 def test_can_call_endpoint():
-    response = requests.get(ENDPOINT)
+    response = requests.get(ENDPOINT + "/user1")
     assert response.status_code == 200 # check if status code is 200
 
-def test_can_create_task():
-    payload = new_task_payload()
-    create_task_response = create_task(payload)
-    assert create_task_response.status_code == 200
+def test_can_create_user():
+    payload = new_user_payload()
+    create_user_response = create_user(payload)
+    assert create_user_response.status_code == 200
 
-    data = create_task_response.json()
+    data = create_user_response.json()
     print(data)
 
-    task_id = data["task"]["task_id"]
-    get_task_response = get_task(task_id)
+    user_name = data["user1"]["username"]
+    get_user_response = get_user(user_name)
 
-    assert get_task_response.status_code == 200
-    get_task_response = get_task_response.json()
-    assert get_task_response["content"] == payload["content"] # na fail staci napisat nejaky iny string
-    assert get_task_response["user_id"] == payload["user_id"]
-    print(get_task_response)
+    assert get_user_response.status_code == 200
+    get_user_response = get_user_response.json()
+    assert get_user_response["firstName"] == payload["firstName"] # na fail staci napisat nejaky iny string
+    assert get_user_response["username"] == payload["username"]
+    print(get_user_response)
 
 def test_can_update_task():
-    payload = new_task_payload()
-    create_task_response = create_task(payload)
+    payload = new_user_payload()
+    create_task_response = create_user(payload)
     assert create_task_response.status_code == 200
     task_id = create_task_response.json()["task"]["task_id"]
 
@@ -51,7 +51,7 @@ def test_can_update_task():
     update_task_response = update_task(new_payload)
     assert update_task_response.status_code == 200
 
-    get_task_response = get_task(task_id)
+    get_task_response = get_user(task_id)
     assert get_task_response.status_code == 200
     get_task_data = get_task_response.json()
     assert get_task_data["content"] == new_payload["content"]
@@ -59,9 +59,9 @@ def test_can_update_task():
 
 def test_can_list_tasks():
     n = 3
-    payload = new_task_payload()
+    payload = new_user_payload()
     for _ in range(n):
-        create_task_response = create_task(payload)
+        create_task_response = create_user(payload)
         assert create_task_response.status_code == 200
     user_id = payload["user_id"]
     list_task_reponse = list_tasks(user_id)
@@ -72,25 +72,25 @@ def test_can_list_tasks():
     assert len(tasks) == n
 
 def test_can_delete_task():
-    payload = new_task_payload()
-    create_task_response = create_task(payload)
+    payload = new_user_payload()
+    create_task_response = create_user(payload)
     assert create_task_response.status_code == 200
     task_id = create_task_response.json()["task"]["task_id"]
 
     delete_task_response = delete_task(task_id)
     assert delete_task_response.status_code == 200
 
-    get_task_response = get_task(task_id)
+    get_task_response = get_user(task_id)
     assert get_task_response.status_code == 404
 
-def create_task(payload):
-    return requests.put(ENDPOINT + "/create-task", json=payload)
+def create_user(payload):
+    return requests.post(ENDPOINT, json=payload)
 
 def update_task(payload):
     return requests.put(ENDPOINT + "/update-task", json=payload)
 
-def get_task(task_id):
-    return requests.get(ENDPOINT + f"/get-task{task_id}")
+def get_user(user_name):
+    return requests.get(ENDPOINT + f"/{user_name}")
 
 def list_tasks(user_id):
     return requests.get(ENDPOINT + f"/list-tasks{user_id}")
@@ -98,12 +98,14 @@ def list_tasks(user_id):
 def delete_task(task_id):
     return requests.delete(ENDPOINT + f"/delete-task{task_id}")
 
-def new_task_payload():
-    user_id = f"test_user_{uuid.uuid4().hex}"
-    content = f"test_content_{uuid.uuid4().hex}"
+def new_user_payload():
+    user_name = "user1"
     return {
-        "content": content,
-        "user_id": user_id,
-        "task_id": "test_task_id",  # nemusime, lebo je generovany
-        "is_done": False,
+        "username": user_name,
+        "firstName": 'Ferko',
+        "lastName": "Mrkvicka",  # nemusime, lebo je generovany
+        "email": "ferko.mrkvicka@gmail.com",
+        "password": "1234",
+        "phone": "421949888555",
+        "userStatus": 0,
     }
