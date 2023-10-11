@@ -27,83 +27,75 @@ def test_can_create_user():
     data = create_user_response.json()
     print(data)
 
-    user_name = data["user1"]["username"]
-    get_user_response = get_user(user_name)
+    status = data["code"]
+    get_response = create_user_response.status_code
 
-    assert get_user_response.status_code == 200
+    assert get_response == status
+    username = payload["username"]
+    get_user_response = get_user(username)
+
     get_user_response = get_user_response.json()
-    assert get_user_response["firstName"] == payload["firstName"] # na fail staci napisat nejaky iny string
+    assert get_user_response["firstName"] == payload["firstName"]
     assert get_user_response["username"] == payload["username"]
     print(get_user_response)
 
 def test_can_update_task():
     payload = new_user_payload()
-    create_task_response = create_user(payload)
-    assert create_task_response.status_code == 200
-    task_id = create_task_response.json()["task"]["task_id"]
+    create_user_response = create_user(payload)
+    assert create_user_response.status_code == 200
+    username = payload["username"]
 
     new_payload = {
-        "content": "my updated content",
-        "user_id": payload["user_id"],
-        "task_id": task_id,  # nemusime, lebo je generovany
-        "is_done": True,
+        "id": 0,
+        "username": username,
+        "firstName": 'Ferkoooo',
+        "lastName": "Mrkvickaaaa",
+        "email": "ferko.mrkvicka@gmail.com",
+        "password": "1234",
+        "phone": "421949888555",
+        "userStatus": 0,
     }
-    update_task_response = update_task(new_payload)
-    assert update_task_response.status_code == 200
+    update_user_response = update_user(username, new_payload)
+    assert update_user_response.status_code == 200
 
-    get_task_response = get_user(task_id)
-    assert get_task_response.status_code == 200
-    get_task_data = get_task_response.json()
-    assert get_task_data["content"] == new_payload["content"]
-    assert get_task_data["is_done"] == new_payload["is_done"]
+    get_user_response = get_user(username)
+    assert get_user_response.status_code == 200
+    get_user_data = get_user_response.json()
+    assert get_user_data["firstName"] == new_payload["firstName"]
+    assert get_user_data["username"] == new_payload["username"]
 
-def test_can_list_tasks():
-    n = 3
+def test_can_delete_user():
     payload = new_user_payload()
-    for _ in range(n):
-        create_task_response = create_user(payload)
-        assert create_task_response.status_code == 200
-    user_id = payload["user_id"]
-    list_task_reponse = list_tasks(user_id)
-    assert list_task_reponse.status_code == 200
-    data = list_task_reponse.json()
+    create_user_response = create_user(payload)
+    assert create_user_response.status_code == 200
+    username = payload["username"]
+    print(username)
 
-    tasks = data["tasks"]
-    assert len(tasks) == n
+    delete_user_response = delete_user(username)
+    assert delete_user_response.status_code == 200
 
-def test_can_delete_task():
-    payload = new_user_payload()
-    create_task_response = create_user(payload)
-    assert create_task_response.status_code == 200
-    task_id = create_task_response.json()["task"]["task_id"]
-
-    delete_task_response = delete_task(task_id)
-    assert delete_task_response.status_code == 200
-
-    get_task_response = get_user(task_id)
-    assert get_task_response.status_code == 404
+    get_user_response = get_user(username)
+    assert get_user_response.status_code == 404
 
 def create_user(payload):
     return requests.post(ENDPOINT, json=payload)
 
-def update_task(payload):
-    return requests.put(ENDPOINT + "/update-task", json=payload)
+def update_user(user_name, payload):
+    return requests.put(ENDPOINT + f"/{user_name}", json=payload)
 
 def get_user(user_name):
     return requests.get(ENDPOINT + f"/{user_name}")
 
-def list_tasks(user_id):
-    return requests.get(ENDPOINT + f"/list-tasks{user_id}")
-
-def delete_task(task_id):
-    return requests.delete(ENDPOINT + f"/delete-task{task_id}")
+def delete_user(user_name):
+    return requests.delete(ENDPOINT + f"/{user_name}")
 
 def new_user_payload():
     user_name = "user1"
     return {
+        "id": 0,
         "username": user_name,
         "firstName": 'Ferko',
-        "lastName": "Mrkvicka",  # nemusime, lebo je generovany
+        "lastName": "Mrkvicka",
         "email": "ferko.mrkvicka@gmail.com",
         "password": "1234",
         "phone": "421949888555",
