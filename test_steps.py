@@ -1,11 +1,11 @@
 import requests #to request https endpoint
 import endpoint as ENDPOINT
-import uuid # unigue identifier
 
 
 def test_can_call_endpoint():
     response = requests.get(ENDPOINT.User_ENDPOINT + "/user3")
     assert response.status_code == 200 # check if status code is 200
+
 
 def test_can_create_user():
     payload = ENDPOINT.new_user_payload()
@@ -13,7 +13,6 @@ def test_can_create_user():
     assert create_user_response.status_code == 200
 
     data = create_user_response.json()
-    print(data)
 
     status = data["code"]
     get_response = create_user_response.status_code
@@ -25,7 +24,7 @@ def test_can_create_user():
     get_user_response = get_user_response.json()
     assert get_user_response["firstName"] == payload["firstName"]
     assert get_user_response["username"] == payload["username"]
-    print(get_user_response)
+
 
 def test_can_update_user():
     payload = ENDPOINT.new_user_payload()
@@ -52,12 +51,12 @@ def test_can_update_user():
     assert get_user_data["firstName"] == new_payload["firstName"]
     assert get_user_data["username"] == new_payload["username"]
 
+
 def test_can_delete_user():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
     assert create_user_response.status_code == 200
     username = payload["username"]
-    print(username)
 
     delete_user_response = ENDPOINT.delete_user(username)
     assert delete_user_response.status_code == 200
@@ -80,8 +79,6 @@ def test_can_logout():
     assert get_user_response.status_code == 200
 
     get_user_response_logout = ENDPOINT.get_logout()
-
-    # get_user_logout = get_user_response_logout.json()
     assert get_user_response_logout.status_code == 200
 
 
@@ -96,6 +93,20 @@ def test_login():
     assert get_response == status
 
     get_user_response = ENDPOINT.login_user(username=payload["username"], password=payload["password"])
+    assert get_user_response.status_code == 200
+
+
+def test_can_login_user():
+    payload = ENDPOINT.new_user_payload()
+    create_user_response = ENDPOINT.create_user(payload)
+    assert create_user_response.status_code == 200
+    data = create_user_response.json()
+
+    status = data["code"]
+    get_response = create_user_response.status_code
+    assert get_response == status
+
+    get_user_response = ENDPOINT.login_user(user_name=payload["username"], password=payload["password"])
     assert get_user_response.status_code == 200
 
 
@@ -221,3 +232,38 @@ def test_delete_id():
 def test_delete_pet_id_404():
     find_pet = ENDPOINT.delete_pet_id(150)
     assert find_pet.status_code == 404
+
+
+def test_can_order():
+    payload = ENDPOINT.create_order()
+    create_order_response = ENDPOINT.store_order(payload)
+    assert create_order_response.status_code == 200
+
+    get_order_data = create_order_response.json()
+    assert get_order_data["petId"] == payload["petId"]
+    assert get_order_data["quantity"] == payload["quantity"]
+
+    orderId = payload["id"]
+    get_order_response = ENDPOINT.get_order(orderId)
+
+    get_order_response = get_order_response.json()
+    assert get_order_response["petId"] == payload["petId"]
+    assert get_order_response["quantity"] == payload["quantity"]
+
+
+def test_can_delete_order():
+    payload = ENDPOINT.create_order()
+    create_order_response = ENDPOINT.store_order(payload)
+    assert create_order_response.status_code == 200
+    id = payload["id"]
+
+    delete_order_response = ENDPOINT.delete_user(id)
+    assert delete_order_response.status_code == 200
+
+    get_order_response = ENDPOINT.get_order(id)
+    assert get_order_response.status_code == 404
+
+
+def test_can_check_inventory():
+    get_inventory_response = ENDPOINT.get_inventory()
+    assert get_inventory_response.status_code == 200
