@@ -1,12 +1,15 @@
-import requests #to request https endpoint
+import pytest
+import requests  # to request https endpoint
 import endpoint as ENDPOINT
 
 
+@pytest.mark.user
 def test_can_call_endpoint():
     response = requests.get(ENDPOINT.User_ENDPOINT + "/user3")
-    assert response.status_code == 200 # check if status code is 200
+    assert response.status_code == 200  # check if status code is 200
 
 
+@pytest.mark.user
 def test_can_create_user():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -26,6 +29,7 @@ def test_can_create_user():
     assert get_user_response["username"] == payload["username"]
 
 
+@pytest.mark.user
 def test_can_update_user():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -52,6 +56,7 @@ def test_can_update_user():
     assert get_user_data["username"] == new_payload["username"]
 
 
+@pytest.mark.user
 def test_can_delete_user():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -65,6 +70,7 @@ def test_can_delete_user():
     assert get_user_response.status_code == 404
 
 
+@pytest.mark.user
 def test_can_logout():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -82,6 +88,7 @@ def test_can_logout():
     assert get_user_response_logout.status_code == 200
 
 
+@pytest.mark.user
 def test_login():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -96,6 +103,7 @@ def test_login():
     assert get_user_response.status_code == 200
 
 
+@pytest.mark.user
 def test_can_login_user():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -110,18 +118,21 @@ def test_can_login_user():
     assert get_user_response.status_code == 200
 
 
+@pytest.mark.user
 def test_can_create_list():
     payload = ENDPOINT.create_list_users()
     create_user_response = ENDPOINT.create_list(payload)
     assert create_user_response.status_code == 200
 
 
+@pytest.mark.store
 def test_store_order():
     payload = ENDPOINT.new_store_payload()
     response_store = ENDPOINT.store_order(payload)
     assert response_store.status_code == 200
 
 
+@pytest.mark.store
 def test_store_order_id():
     payload = ENDPOINT.new_store_payload()
     response_store = ENDPOINT.store_order(payload)
@@ -132,6 +143,7 @@ def test_store_order_id():
     assert store_order.status_code == 200
 
 
+@pytest.mark.store
 def test_store_order_id_404():
     payload = ENDPOINT.new_store_payload()
     response_store = ENDPOINT.store_order(payload)
@@ -141,6 +153,7 @@ def test_store_order_id_404():
     assert store_order.status_code == 404
 
 
+@pytest.mark.store
 def test_store_delete_order_id():
     payload = ENDPOINT.new_store_payload()
     response_store = ENDPOINT.store_order(payload)
@@ -154,22 +167,26 @@ def test_store_delete_order_id():
     assert delete.status_code == 200
 
 
+@pytest.mark.store
 def test_store_delete_order_id_404():
     delete = ENDPOINT.store_delete_order_id("9")
     assert delete.status_code == 404
 
 
+@pytest.mark.store
 def test_inventory():
     response = ENDPOINT.store_get_inventory()
     assert response.status_code == 200
 
 
+@pytest.mark.pet
 def test_create_pet():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
     assert response_pet.status_code == 200
 
 
+@pytest.mark.pet
 def test_update_pet():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -185,6 +202,7 @@ def test_update_pet():
     assert create_response["id"] == update_response["id"]
 
 
+@pytest.mark.pet
 def test_update_pet_404():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -204,6 +222,7 @@ def test_update_pet_404():
     assert response_pet.status_code == 404
 
 
+@pytest.mark.pet
 def test_find_pet_id():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -214,11 +233,13 @@ def test_find_pet_id():
     assert find_pet.status_code == 200
 
 
+@pytest.mark.pet
 def test_find_pet_id_404():
     find_pet = ENDPOINT.find_pet_id(15)
     assert find_pet.status_code == 404
 
 
+@pytest.mark.pet
 def test_delete_id():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -229,11 +250,13 @@ def test_delete_id():
     assert find_pet.status_code == 200
 
 
+@pytest.mark.pet
 def test_delete_pet_id_404():
     find_pet = ENDPOINT.delete_pet_id(150)
     assert find_pet.status_code == 404
 
 
+@pytest.mark.store
 def test_can_order():
     payload = ENDPOINT.create_order()
     create_order_response = ENDPOINT.store_order(payload)
@@ -251,6 +274,7 @@ def test_can_order():
     assert get_order_response["quantity"] == payload["quantity"]
 
 
+@pytest.mark.store
 def test_can_delete_order():
     payload = ENDPOINT.create_order()
     create_order_response = ENDPOINT.store_order(payload)
@@ -264,6 +288,7 @@ def test_can_delete_order():
     assert get_order_response.status_code == 404
 
 
+@pytest.mark.store
 def test_can_check_inventory():
     get_inventory_response = ENDPOINT.get_inventory()
     assert get_inventory_response.status_code == 200
