@@ -1,18 +1,29 @@
+#import requests kniznice, nachadzaju sa tam requesty, ktore sa pouzivaju pri volani endpointu
+#zakladne requesty su: post, get, put, delete
+# Post sa zvycajne pouziva pri vytvarani niecoho noveho, napriklad uzivatela
+# Get ked chcem dostat
 import requests
 
+# ukladanie endpointov do premennych
 User_ENDPOINT = "https://petstore.swagger.io/v2/user"
 Store_ENDPOINT = "https://petstore.swagger.io/v2/store"
 Pet_ENDPOINT = "https://petstore.swagger.io/v2/pet"
 
+#funkcia na vytvorenie noveho uzivatela, pouziva sa request post, vracia dvhe hodnoty, endpoint pre uzivatela
+# a payload vo formate json
+#request post sa vacsinou pouziva pri vytvarani
 def create_user(payload):
     return requests.post(User_ENDPOINT, json=payload)
 
+#funkcia na aktualizaciu uzivatela, pouziva sa request put
 def update_user(user_name, payload):
     return requests.put(User_ENDPOINT + f"/{user_name}", json=payload)
 
+# funkcia, ktora vrati uzivatela, pouziva sa request get
 def get_user(user_name):
     return requests.get(User_ENDPOINT + f"/{user_name}")
 
+#funkcia, ktora vymaze uzivatela, pouziva sa request delete
 def delete_user(user_name):
     return requests.delete(User_ENDPOINT + f"/{user_name}")
 
@@ -22,6 +33,8 @@ def login_user(user_name, password):
 def create_list(payload):
     return requests.post(User_ENDPOINT + "/createWithList", json=payload)
 
+# funkcia na vytvorenie listu slovnikov, slovik sa pouziva na vyplnenie vsetkych potrebnych parametrov vo formate json,
+# aby jednotlive api spravne fungovalo
 def create_list_users():
     dict = [{
         "id": 1,
@@ -46,6 +59,7 @@ def create_list_users():
     ]
     return dict
 
+# funkcia na vytvorenie slovnika
 def new_user_payload():
     user_name = "user4"
     return {
