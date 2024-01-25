@@ -1,41 +1,49 @@
-import pytest
+import pytest #import kniznice pytest
 import requests  # to request https endpoint
-import endpoint as ENDPOINT
+import endpoint as ENDPOINT # import nasho modulu endpoint, ktory je pomenovany ako ENDPOINT
 
 
+#user tag, tag sa pouziva na zgrupenie urcitej casti testov,
 @pytest.mark.user
+# test sa skontrolovanie endpointu s requestom get
 def test_can_call_endpoint():
     response = requests.get(ENDPOINT.User_ENDPOINT + "/user3")
-    assert response.status_code == 200  # check if status code is 200
+    assert response.status_code == 200  # skontroluje, ci je status code 200, tzn. ok
 
 
 @pytest.mark.user
+# test na vytvorenie noveho uzivatela
 def test_can_create_user():
-    payload = ENDPOINT.new_user_payload()
-    create_user_response = ENDPOINT.create_user(payload)
-    assert create_user_response.status_code == 200
+    payload = ENDPOINT.new_user_payload() #do pemennej payload ukladam slovnik, ktory som si vytvoril v module endpoint
+    create_user_response = ENDPOINT.create_user(payload)  # vytvorenie uzivatela pomocou funkcie z modulu endpoint
+    assert create_user_response.status_code == 200  # skontroluje, ci status kod tejto operiacie je 200
 
-    data = create_user_response.json()
+    data = create_user_response.json()  #ukladanie vystupu z predoslej operacie do premennej data
 
-    status = data["code"]
-    get_response = create_user_response.status_code
+    status = data["code"]  # ukladanie hodnoty "code" zo slovnika data do premennej status
+    get_response = create_user_response.status_code # ukladanie status_code do premennej get_response
 
-    assert get_response == status
-    username = payload["username"]
-    get_user_response = ENDPOINT.get_user(username)
+    assert get_response == status # kontroluje, ci hodnoty z predchadzajucich dvoch premennych sa rovnaju
+    username = payload["username"] # ukladanie hodnoty username do premennej username
+    get_user_response = ENDPOINT.get_user(username) # pouzitie funkcie get_user so vstupnym parametrom username z predchadzajucej premennej
+    # dostanem novo vytvoreneho uzivatela
 
-    get_user_response = get_user_response.json()
-    assert get_user_response["firstName"] == payload["firstName"]
-    assert get_user_response["username"] == payload["username"]
+    get_user_response = get_user_response.json() # ukladanie odpovede z volania API do json formatu
+    assert get_user_response["firstName"] == payload["firstName"] # kontrola, ci sa hodnota "firstName" z get_user = s hodnotou,
+    # ktora sa pouzila pri vytvoreni noveho uzivatel
+    assert get_user_response["username"] == payload["username"] # kontrola, ci sa hodnota "username" z get_user = s hodnotou,
+    # ktora sa pouzila pri vytvoreni noveho uzivatel
 
 
 @pytest.mark.user
+# test na zmenu noveho uzivatela
 def test_can_update_user():
+    # vytvorenie noveho uzivatela a kontrola status_code
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
     assert create_user_response.status_code == 200
     username = payload["username"]
-
+ # vytvorenie noveho payloadu prostrednictvojm slovnika.
     new_payload = {
         "id": 0,
         "username": username,
@@ -46,26 +54,35 @@ def test_can_update_user():
         "phone": "421949888555",
         "userStatus": 0,
     }
+    # aktualizacia uzivatela pomocou novovytvoreneho payloadu, kontrola status_code
     update_user_response = ENDPOINT.update_user(username, new_payload)
     assert update_user_response.status_code == 200
 
+    # volanie funkcie get_user na kontrolu zmien z predoslej operacie a kontrola status_code
     get_user_response = ENDPOINT.get_user(username)
     assert get_user_response.status_code == 200
     get_user_data = get_user_response.json()
+
+    #kontrola danych hodnot, ktore by sa mali zmenit, ak doslo k aktualizacii
     assert get_user_data["firstName"] == new_payload["firstName"]
     assert get_user_data["username"] == new_payload["username"]
 
 
 @pytest.mark.user
+#test na vymazanie noveho uzivatela
 def test_can_delete_user():
+
+    # vytvorenie noveho uzivatela a kontrola status_code
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
     assert create_user_response.status_code == 200
     username = payload["username"]
 
+    # pouzite api delete na vymazanie uzivatela a kontrola status_code
     delete_user_response = ENDPOINT.delete_user(username)
     assert delete_user_response.status_code == 200
 
+    # kontrola, ci je dany uzivatel vymazany, kontrola zodpovedajuceho status_code (404, not found)
     get_user_response = ENDPOINT.get_user(username)
     assert get_user_response.status_code == 404
 
