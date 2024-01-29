@@ -11,8 +11,9 @@ Potom naklonovat projekt z greyson gitlabu, link tu: https://gitlab.com/vladimir
 do vasho oblubeneho IDE.
 V subore :requirements.txt" sa nachadzaju kniznice, ktore treba do projektu nainstalovat, preto do teminalu zadajte 
 prikaz:
-MacOS: pip3 install -r requirements.txt,
-Windows: pip3 install -r requirements.txt
+
+<br>MacOS: pip3 install -r requirements.txt </br>
+<br>Windows: pip install -r requirements.txt </br>
 
 # Praca s testami
 
@@ -84,4 +85,12 @@ Toto je jednoduchy priklad co by mohol obsahovat Dockerfile.
 
 <br> Prikaz na vybuildenie: docker build -t nazov_image . </br>
 <br> Potom uz staci len spustit na Docker aplikacii vas novo vytvoreny docker image alebo do terminalu treba zadat  docker run nazov_image </br>
+
+
+# Dokumentacie
+
+<br> Python dokumentacia: https://docs.python.org/3/ </br>
+<br> Dokumentacia na pytest: https://docs.pytest.org/en/7.1.x/contents.html </br>
+<br> Dokumentacia na kniznicu requests: https://requests.readthedocs.io/en/latest/ </br>
+
 
