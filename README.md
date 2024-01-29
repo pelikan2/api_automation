@@ -4,7 +4,7 @@ Tento sluzi na automatizaciu volne dostupnych APIs z https://petstore.swagger.io
 alebo ak chcete "features", kde si mozete precvicit rozne druhy API testov.
 Tento konkretny projekt vyuziva na automatizaciu python a jeho kniznicu pytest.
 
-# Prvotne nastaveenia
+# Prvotne nastavenia
 
 V prvom rade treba nainstalovat python do vasho PC, link https://www.python.org/downloads/.
 Potom naklonovat projekt z greyson gitlabu, link tu: https://gitlab.com/vladimir.pelikan/api_testing.git
@@ -38,6 +38,7 @@ cat /var/log/jenkins/jenkins.log
 Priamo v jenkinse uz treba vytvorit len novu pipeline. Na dashboarde je moznost "novy", zadate pipeline a nazov.
 Otvori sa nastavenie tejto pipeline, jedine co vas tu bude zaujimat je pipeline script (uplne dole)
 Cely skript sa sklada z niekolkych "stages":
+
     agent any
 
     stages {
@@ -59,7 +60,28 @@ Cely skript sa sklada z niekolkych "stages":
             }
         }
     }
-}
+
 Toto je priklad ako by taky script pre pipeline mohol vyzerat.
 V prvom rade je treba sa checkoutnut na branchu, ktoru chcete testovat.
 Potom nainstalovat potrebne kniznice a nakoniec prichadza na rad samotne testovanie.
+
+# Spustenie testov na Docker image
+
+Testy sa daju spustat aj na tzv. docker image, vyhodou je napriklad, ze tak nezahlcuje pamat PC oproti napriklad virtualke.
+Na to, aby ste vedeli spustat testy cez Docker si potrebujete stiahnut Docker, link: https://docs.docker.com/desktop/install/mac-install/
+Vytvorit si ucet na Docker a potom v projekte, ktory chcete pouzit vytvorit "Dockerfile", nazov treba dodrzat, lebo system ho vie prave podla toho nazvu rozpoznat.
+***
+<br>FROM python:3.11-slim-buster  -pouzivame python 3.11 </br>
+<br>WORKDIR /python_api_automation - vytvorime novu zlozku pre docker build </br>
+<br>COPY requirements.txt ./ - do novej zlozky skopirujeme requirements.txt </br>
+<br>RUN pip install --no-cache-dir -r requirements.txt - nainstalujeme requirementy </br>
+<br>COPY . . - skopirujeme zvysok  lokalnych suborov z api_testing no zlozky s novym Docker image </br>
+<br>CMD ["pytest", "test_steps.py"] - spustime testy </br>
+
+***
+
+Toto je jednoduchy priklad co by mohol obsahovat Dockerfile.
+
+<br> Prikaz na vybuildenie: docker build -t nazov_image . </br>
+<br> Potom uz staci len spustit na Docker aplikacii vas novo vytvoreny docker image alebo do terminalu treba zadat  docker run nazov_image </br>
+
