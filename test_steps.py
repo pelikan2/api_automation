@@ -115,7 +115,7 @@ def test_login():
     status = date["code"]
     get_response = create_user_response.status_code
     assert get_response == status
-
+    # pouzitie login_user funkcie z modulu endpoint s pouzitim pametrov z payloadu
     get_user_response = ENDPOINT.login_user(username=payload["username"], password=payload["password"])
     assert get_user_response.status_code == 200
 
@@ -142,6 +142,7 @@ def test_can_create_list():
     assert create_user_response.status_code == 200
 
 
+# store tag
 @pytest.mark.store
 def test_store_order():
     payload = ENDPOINT.new_store_payload()
@@ -195,7 +196,7 @@ def test_inventory():
     response = ENDPOINT.store_get_inventory()
     assert response.status_code == 200
 
-
+# pet tag
 @pytest.mark.pet
 def test_create_pet():
     payload = ENDPOINT.new_pet_payload()
