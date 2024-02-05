@@ -28,13 +28,33 @@ Teraz by malo byt vsetko nastavene a je mozne spustat testy, da sa to viacerymi 
 - v projekte su pouzite tzv. tagy, ktorymi su oznacene jednotlive features, ak teda je nutne stustit len jednu feature, potom bude prikaz nasledovny: pytest -m <tag> -v. 
 
 
-# Nastavenie Jenkins lokalne a vytvorenie fungujucej pipeline pre macOS
+# Nastavenie Jenkins lokalne a vytvorenie fungujucej pipeline
+
+MacOS:
 
 V prvom rade treba nainstalovat homebrew, link: https://brew.sh/
 Instalacia jenkinsu: brew install jenkins-lts
 Start jenkinsu: brew services start jenkins-lts, po zadani tohto prikazu by ste mali dostat link na localhost, kde sa vas jenkins nachadza,
 zadajte ho do browsera, spusti sa jenkins, bude od vas chiet heslo, ktore najdete v logoch pri starte, prikaz: 
 cat /var/log/jenkins/jenkins.log
+
+Windows:
+
+Na webe Adoptium, link https://adoptium.net/temurin/releases/, treba stiahnut a nainstalovat temurin 11 jdk. Potom z
+oficialnej stranky jenkins stiahnut jenkins. Je potrebne pridat v sekcii System variables JAVA_HOME variable do environment variable
+vo windowse, ak sa tam uz takato premenna nenachadza. Potom este treba zmenit v Path cestu k jdk/bin (namiesto celej cesty
+tam zadate nasledovne: %JAVA_HOME%\bin).
+V Local Security Policy v zlozke Local Policies otvorte User Rights Assignment, Kliknite na Log on as a service a potom 
+Add User or Group, do posledneho riadka pridajde Administrator a kliknite Check Names a potom OK, Apply a znova OK
+Nainstalujte Jenkins. Vyberte z moznosti ci chcete pouzit jenkins ako LocalSystem alebo local alebo domain system.
+Pre druhu moznost zadajte do policka Account Administrator a heslo, ktore chcete pouzivat.
+Potom si mozete vybrat, ci chcete spustit jenkins hned alebo az manualne (manualne sa odporuca ak chcete este predtym urobit nejake zmeny)
+Do zlozky, kde sa nainstaloval Jenkins vytvorte priecinok tmp. Teraz otvorte aplikaciu windows aplikaciu Services, najdite jenkins
+kliknite pravym a start.
+Potom otvorte prehliadac a zadajte link http://localhost:8080/. Jenkins od vas bude vyzadovat Admin heslo, ktore najdete
+v err txt subore v zlozke jenkins, skopirujte a kliknite na continue. Kliknite na install suggested plugins, potom si
+vytvorte ucet a mozete pouzivat jenkins.
+link na setup: https://www.jenkins.io/doc/book/installing/windows/
 
 Priamo v jenkinse uz treba vytvorit len novu pipeline. Na dashboarde je moznost "novy", zadate pipeline a nazov.
 Otvori sa nastavenie tejto pipeline, jedine co vas tu bude zaujimat je pipeline script (uplne dole)
