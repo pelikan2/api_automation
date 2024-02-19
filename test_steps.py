@@ -1,17 +1,20 @@
 import pytest #import kniznice pytest
 import requests  # to request https endpoint
+import allure # importuje kniznicu, ktora sluzi na vytvaranie test reportov
 import endpoint as ENDPOINT # import nasho modulu endpoint, ktory je pomenovany ako ENDPOINT
 
 
-#user tag, tag sa pouziva na zgrupenie urcitej casti testov,
+#user tag, tag sa pouziva na zgrupenie urcitej casti testov
 @pytest.mark.user
 # test sa skontrolovanie endpointu s requestom get
 def test_can_call_endpoint():
-    response = requests.get(ENDPOINT.User_ENDPOINT + "/user3")
+    response = requests.get(ENDPOINT.User_ENDPOINT + "/user1")
     assert response.status_code == 200  # skontroluje, ci je status code 200, tzn. ok
 
 
 @pytest.mark.user
+@allure.feature("user")
+@allure.severity(allure.severity_level.BLOCKER)
 # test na vytvorenie noveho uzivatela
 def test_can_create_user():
     payload = ENDPOINT.new_user_payload() #do pemennej payload ukladam slovnik, ktory som si vytvoril v module endpoint
@@ -36,6 +39,8 @@ def test_can_create_user():
 
 
 @pytest.mark.user
+@allure.feature("user")
+@allure.severity(allure.severity_level.NORMAL)
 # test na zmenu noveho uzivatela
 def test_can_update_user():
     # vytvorenie noveho uzivatela a kontrola status_code
@@ -69,6 +74,8 @@ def test_can_update_user():
 
 
 @pytest.mark.user
+@allure.feature("user")
+@allure.severity(allure.severity_level.NORMAL)
 #test na vymazanie noveho uzivatela
 def test_can_delete_user():
 
@@ -88,6 +95,8 @@ def test_can_delete_user():
 
 
 @pytest.mark.user
+@allure.feature("user")
+@allure.severity(allure.severity_level.BLOCKER)
 def test_can_logout():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -106,6 +115,8 @@ def test_can_logout():
 
 
 @pytest.mark.user
+@allure.feature("user")
+@allure.severity(allure.severity_level.BLOCKER)
 def test_login():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -121,6 +132,8 @@ def test_login():
 
 
 @pytest.mark.user
+@allure.feature("user")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_can_login_user():
     payload = ENDPOINT.new_user_payload()
     create_user_response = ENDPOINT.create_user(payload)
@@ -136,6 +149,8 @@ def test_can_login_user():
 
 
 @pytest.mark.user
+@allure.feature("user")
+@allure.severity(allure.severity_level.MINOR)
 def test_can_create_list():
     payload = ENDPOINT.create_list_users()
     create_user_response = ENDPOINT.create_list(payload)
@@ -144,6 +159,8 @@ def test_can_create_list():
 
 # store tag
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.MINOR)
 def test_store_order():
     payload = ENDPOINT.new_store_payload()
     response_store = ENDPOINT.store_order(payload)
@@ -151,6 +168,8 @@ def test_store_order():
 
 
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.NORMAL)
 def test_store_order_id():
     payload = ENDPOINT.new_store_payload()
     response_store = ENDPOINT.store_order(payload)
@@ -162,6 +181,8 @@ def test_store_order_id():
 
 
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.MINOR)
 def test_store_order_id_404():
     payload = ENDPOINT.new_store_payload()
     response_store = ENDPOINT.store_order(payload)
@@ -172,6 +193,8 @@ def test_store_order_id_404():
 
 
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.BLOCKER)
 def test_store_delete_order_id():
     payload = ENDPOINT.new_store_payload()
     response_store = ENDPOINT.store_order(payload)
@@ -186,18 +209,24 @@ def test_store_delete_order_id():
 
 
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_store_delete_order_id_404():
     delete = ENDPOINT.store_delete_order_id("9")
     assert delete.status_code == 404
 
 
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.NORMAL)
 def test_inventory():
     response = ENDPOINT.store_get_inventory()
     assert response.status_code == 200
 
 # pet tag
 @pytest.mark.pet
+@allure.feature("pet")
+@allure.severity(allure.severity_level.BLOCKER)
 def test_create_pet():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -205,6 +234,8 @@ def test_create_pet():
 
 
 @pytest.mark.pet
+@allure.feature("pet")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_update_pet():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -221,6 +252,8 @@ def test_update_pet():
 
 
 @pytest.mark.pet
+@allure.feature("pet")
+@allure.severity(allure.severity_level.NORMAL)
 def test_update_pet_404():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -241,6 +274,8 @@ def test_update_pet_404():
 
 
 @pytest.mark.pet
+@allure.feature("pet")
+@allure.severity(allure.severity_level.MINOR)
 def test_find_pet_id():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -252,12 +287,16 @@ def test_find_pet_id():
 
 
 @pytest.mark.pet
+@allure.feature("pet")
+@allure.severity(allure.severity_level.MINOR)
 def test_find_pet_id_404():
     find_pet = ENDPOINT.find_pet_id(15)
     assert find_pet.status_code == 404
 
 
 @pytest.mark.pet
+@allure.feature("pet")
+@allure.severity(allure.severity_level.NORMAL)
 def test_delete_id():
     payload = ENDPOINT.new_pet_payload()
     response_pet = ENDPOINT.pet_create(payload)
@@ -269,12 +308,16 @@ def test_delete_id():
 
 
 @pytest.mark.pet
+@allure.feature("pet")
+@allure.severity(allure.severity_level.MINOR)
 def test_delete_pet_id_404():
     find_pet = ENDPOINT.delete_pet_id(150)
     assert find_pet.status_code == 404
 
 
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_can_order():
     payload = ENDPOINT.create_order()
     create_order_response = ENDPOINT.store_order(payload)
@@ -293,6 +336,8 @@ def test_can_order():
 
 
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.BLOCKER)
 def test_can_delete_order():
     payload = ENDPOINT.create_order()
     create_order_response = ENDPOINT.store_order(payload)
@@ -307,6 +352,8 @@ def test_can_delete_order():
 
 
 @pytest.mark.store
+@allure.feature("store")
+@allure.severity(allure.severity_level.MINOR)
 def test_can_check_inventory():
     get_inventory_response = ENDPOINT.get_inventory()
     assert get_inventory_response.status_code == 200

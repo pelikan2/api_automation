@@ -38,28 +38,12 @@ Start jenkinsu: brew services start jenkins-lts, po zadani tohto prikazu by ste 
 zadajte ho do browsera, spusti sa jenkins, bude od vas chiet heslo, ktore najdete v logoch pri starte, prikaz: 
 cat /var/log/jenkins/jenkins.log
 
-Windows:
-
-Na webe Adoptium, link https://adoptium.net/temurin/releases/, treba stiahnut a nainstalovat temurin 11 jdk. Potom z
-oficialnej stranky jenkins stiahnut jenkins. Je potrebne pridat v sekcii System variables JAVA_HOME variable do environment variable
-vo windowse, ak sa tam uz takato premenna nenachadza. Potom este treba zmenit v Path cestu k jdk/bin (namiesto celej cesty
-tam zadate nasledovne: %JAVA_HOME%\bin).
-V Local Security Policy v zlozke Local Policies otvorte User Rights Assignment, Kliknite na Log on as a service a potom 
-Add User or Group, do posledneho riadka pridajde Administrator a kliknite Check Names a potom OK, Apply a znova OK
-Nainstalujte Jenkins. Vyberte z moznosti ci chcete pouzit jenkins ako LocalSystem alebo local alebo domain system.
-Pre druhu moznost zadajte do policka Account Administrator a heslo, ktore chcete pouzivat.
-Potom si mozete vybrat, ci chcete spustit jenkins hned alebo az manualne (manualne sa odporuca ak chcete este predtym urobit nejake zmeny)
-Do zlozky, kde sa nainstaloval Jenkins vytvorte priecinok tmp. Teraz otvorte aplikaciu windows aplikaciu Services, najdite jenkins
-kliknite pravym a start.
-Potom otvorte prehliadac a zadajte link http://localhost:8080/. Jenkins od vas bude vyzadovat Admin heslo, ktore najdete
-v err txt subore v zlozke jenkins, skopirujte a kliknite na continue. Kliknite na install suggested plugins, potom si
-vytvorte ucet a mozete pouzivat jenkins.
-link na setup: https://www.jenkins.io/doc/book/installing/windows/
-
 Priamo v jenkinse uz treba vytvorit len novu pipeline. Na dashboarde je moznost "novy", zadate pipeline a nazov.
 Otvori sa nastavenie tejto pipeline, jedine co vas tu bude zaujimat je pipeline script (uplne dole)
 Cely skript sa sklada z niekolkych "stages":
 
+
+    pipeline {
     agent any
 
     stages {
@@ -76,11 +60,55 @@ Cely skript sa sklada z niekolkych "stages":
         }
         stage('Test') {
             steps {
-                sh 'python3 -m pytest -m user -v -s'
+                sh 'python3 -m pytest -m pet -v -s'
                 echo 'The job has been tested'
             }
         }
     }
+    }
+
+Toto je priklad ako by taky script pre pipeline mohol vyzerat.
+V prvom rade je treba sa checkoutnut na branchu, ktoru chcete testovat.
+Potom nainstalovat potrebne kniznice a nakoniec prichadza na rad samotne testovanie.
+
+Windows:
+
+Stiahnite najnovsiu verziu java JDK na oficialnej stranke, link: https://www.oracle.com/java/technologies/downloads/
+potom stiahnite jenkins.war subor z jenkins oficialnej stranky, link: https://www.jenkins.io/download/, ulozte .war subor niekde, kde ho nepriehliadnete.
+Otvorte terminal v zlozke, kde sa nachadza jenkins.war subor a zadajte: java -jar jenkins.war.
+Potom otvorte prehliadac a zadajte link http://localhost:8080/. Jenkins od vas bude vyzadovat Admin heslo, ktore najdete
+v err txt subore v zlozke jenkins, skopirujte a kliknite na continue. Kliknite na install suggested plugins, potom si
+vytvorte ucet a mozete pouzivat jenkins.
+link na setup: https://www.jenkins.io/doc/book/installing/windows/
+
+Priamo v jenkinse uz treba vytvorit len novu pipeline. Na dashboarde je moznost "novy", zadate pipeline a nazov.
+Otvori sa nastavenie tejto pipeline, jedine co vas tu bude zaujimat je pipeline script (uplne dole)
+Cely skript sa sklada z niekolkych "stages":
+
+    pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: '2103ce3c-6b16-4b38-a6f1-93225fdf84e9', url: 'https://gitlab.com/vladimir.pelikan/api_testing.git']])
+            }
+        }
+        stage('Build') {
+            steps {
+                bat 'pip install pytest'
+                bat 'pip install requests'
+            }    
+        }
+        stage('Test') {
+            steps {
+                bat 'python -m pytest -m pet -v -s'
+                echo 'The job has been tested'
+            }
+        }
+    }
+    }
+
 
 Toto je priklad ako by taky script pre pipeline mohol vyzerat.
 V prvom rade je treba sa checkoutnut na branchu, ktoru chcete testovat.
@@ -106,11 +134,23 @@ Toto je jednoduchy priklad co by mohol obsahovat Dockerfile.
 <br> Prikaz na vybuildenie: docker build -t nazov_image . </br>
 <br> Potom uz staci len spustit na Docker aplikacii vas novo vytvoreny docker image alebo do terminalu treba zadat  docker run nazov_image </br>
 
+# Generovanie Allure Reportov
+
+Na generovanie allure reportov pre pytest projekt je potrebne nainstalovat kniznoci allure-pytest, ktora uz je obsiahnuta v subore requirements.txt
+a nainstalovat allure do systemu
+<br> MacOS: brew install allure </br>
+<br> Windows: instalacia balika scoop, link: https://scoop.sh/, instalacia allure: scoop install allure</br>
+
+Potom treba pouzit allure v testoch tak, ako je napriklad pouzity na tomto projekte.
+<br> vygenerovanie .json suborov pre kazdy test na vytvorenie allure reportu: pytest -v -s --alluredir=reportallure </br>, tento prikaz spusti testy, ktorych vysledky sa ulozia do json suborov do zlozky reportallure
+<br> allure serve reportallure\ - vygeneruje allure report, ktory najdete v prehliadaci</br>
+
 
 # Dokumentacie
 
 <br> Python dokumentacia: https://docs.python.org/3/ </br>
 <br> Dokumentacia na pytest: https://docs.pytest.org/en/7.1.x/contents.html </br>
 <br> Dokumentacia na kniznicu requests: https://requests.readthedocs.io/en/latest/ </br>
+<br> Dokumentacia na allure: https://allurereport.org/docs/gettingstarted-installation/ </br>
 
 
